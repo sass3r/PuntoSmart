@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SerialDroid</string>
+    <string name="label">Buscando dispositivo...</string>
+    <string name="boton1">Enviar Entero</string>
+    <string name="boton2">Llamar a Rafo</string>
+</resources>
