@@ -16,7 +16,7 @@ public class ATCall{
   }
 
   public void llamar(String num){
-    cmd = "ATD" + num + "\r\n";
+    cmd = "ATD" + num + ";" + "\r\n";
     try{
       writer.write(cmd,0,cmd.length());
       writer.flush();
