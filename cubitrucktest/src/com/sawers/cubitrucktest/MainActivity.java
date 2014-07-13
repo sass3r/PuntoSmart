@@ -8,11 +8,6 @@ import android.widget.ScrollView;
 import android.widget.LinearLayout;
 import android.widget.EditText;
 import android.view.View;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.File;
 
 
 
@@ -21,13 +16,10 @@ public class MainActivity extends Activity
     private SerialPortFinder serialFinder;
     private ScrollView sv;
     private LinearLayout linearLayout;
-    private TextView tv;
-    private EditText entry;
-    private Button boton, boton1, boton2;
-    public SerialPort serialPort;
-    private InputStream input;
-    private OutputStream output;
-    private OutputStreamWriter writer;
+    private TextView tv, tv1, tv2, tv3;
+    private EditText entry, entry1, entry2;
+    private Button boton, boton1, boton2, boton3, boton4, boton5, boton6, boton7, boton8;
+    private OperacionAT opAt;
 
 
     public void onCreate(Bundle savedInstanceState)
@@ -41,7 +33,15 @@ public class MainActivity extends Activity
 
     public void initGui(){
       entry = new EditText(this);
+      entry1 = new EditText(this);
+      entry2 = new EditText(this);
       tv = new TextView(this);
+      tv1 = new TextView(this);
+      tv2 = new TextView(this);
+      tv3 = new TextView(this);
+      tv1.setText("Marque el Numero al que desea llamar, recargar credito o enviar sms:");
+      tv2.setText("Escriba el monto a recargar montos validos 1bs,2bs,5bs,10bs,20bs:");
+      tv3.setText("SMS:");
       boton = new Button(this);
       boton.setText("Buscar HWSerial");
       boton1 = new Button(this);
@@ -49,15 +49,38 @@ public class MainActivity extends Activity
       boton2 = new Button(this);
       boton2.setText("Llamar");
       tv.setText("Bienvenido");
+      boton3 = new Button(this);
+      boton3.setText("Colgar");
+      boton4 = new Button(this);
+      boton4.setText("Recargar 1Bs Tigo");
+      boton5 = new Button(this);
+      boton5.setText("MiniRecarga Tigo");
+      boton6 = new Button(this);
+      boton6.setText("Consulta de saldo Tigo");
+      boton7 = new Button(this);
+      boton7.setText("Enviar SMS");
+      boton8 = new Button(this);
+      boton8.setText("Contestar Llamada");
       sv = new ScrollView(this);
       linearLayout = new LinearLayout(this);
       linearLayout.setOrientation(LinearLayout.VERTICAL);
       sv.addView(linearLayout);
+      linearLayout.addView(tv1);
       linearLayout.addView(entry);
+      linearLayout.addView(tv2);
+      linearLayout.addView(entry1);
+      linearLayout.addView(tv3);
+      linearLayout.addView(entry2);
       linearLayout.addView(tv);
       linearLayout.addView(boton);
       linearLayout.addView(boton1);
       linearLayout.addView(boton2);
+      linearLayout.addView(boton3);
+      linearLayout.addView(boton8);
+      linearLayout.addView(boton4);
+      linearLayout.addView(boton5);
+      linearLayout.addView(boton6);
+      linearLayout.addView(boton7);
     }
 
     public void actions(){
@@ -71,7 +94,12 @@ public class MainActivity extends Activity
 
       boton1.setOnClickListener(new View.OnClickListener(){
           public void onClick(View v){
-            conectarSerial();
+            opAt = new OperacionAT("/dev/ttyS0");
+            if(opAt.abrirPuerto()){
+              tv.setText("Conectado a /dev/ttyS0");
+            }else{
+              tv.setText("fail!");
+            }
           }
       });
 
@@ -80,6 +108,43 @@ public class MainActivity extends Activity
             llamar();
           }
       });
+
+      boton3.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+            opAt.colgar();
+          }
+      });
+
+      boton4.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+            recargar1bs();
+          }
+      });
+
+      boton5.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+              miniCargaTigo();
+          }
+      });
+
+      boton6.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+              opAt.consultaDeSaldoTigo();
+          }
+      });
+
+      boton7.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+              enviarSMS();
+          }
+      });
+
+      boton8.setOnClickListener(new View.OnClickListener(){
+          public void onClick(View v){
+              opAt.contestar();
+          }
+      });
+
     }
 
     private String concatDevices(String[] dev){
@@ -91,32 +156,27 @@ public class MainActivity extends Activity
 
     }
 
-    private void conectarSerial(){
-        File file = new File("/dev/ttyS0");
-        try{
-          serialPort = new SerialPort(file,9600,0);
-          output = serialPort.getOutputStream();
-          input = serialPort.getInputStream();
-        }catch(IOException ioe){
-
-
-        }
-
-        tv.setText("Conectado a /dev/ttyS0");
-
-    }
-
     public void llamar(){
       String num = entry.getText().toString();
-      String cmd = "";
-      writer = new OutputStreamWriter(output);
-      cmd = "ATD" + num + ";" + "\r\n";
-      try{
-        writer.write(cmd,0,cmd.length());
-        writer.flush();
+      opAt.llamar(num);
+    }
 
-      }catch(IOException ioe){
+    public void recargar1bs(){
+      String num = entry.getText().toString();
+      opAt.recargar1bs(num);
+    }
 
-      }
+    public void miniCargaTigo(){
+      String num = entry.getText().toString();
+      String mnto = entry1.getText().toString();
+      int monto = Integer.parseInt(mnto);
+      opAt.miniCargaTigo(num, monto);
+    }
+
+    public void enviarSMS(){
+      String num = entry.getText().toString();
+      String sms = entry2.getText().toString();
+      opAt.enviarSMS(num,sms);
+
     }
 }

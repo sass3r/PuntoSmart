@@ -12,3 +12,11 @@ adb install -r /path/app.apk
 uso de layouts sin xml
 
 http://learn-it-stuff.blogspot.com/2011/12/creating-dynamic-layouts-in-android_18.html
+
+capturar pantalla android via adb
+
+adb shell screencap -p /sdcard/screen.png
+adb pull /sdcard/screen.png
+adb shell rm /sdcard/screen.png
+
+http://blog.shvetsov.com/2013/02/grab-android-screenshot-to-computer-via.html
